@@ -1,0 +1,334 @@
+First test - DAC into ADC
+=========================
+
+This is the output of the first code checked into GIT
+
+The hardware arrangement is to put output of DAC into ADC1 
+
+A jumper is connected between A2 and A1 on Nucleo board
+
+A Sawtooth signal is generated on DAC.
+ADC is read a few microseconds later 
+
+Note - The time delay between setting DAC and ADC responding
+
+ADC sampling 41Cycles 5. At this speed the DMA locks if the DMAbuffersize is set to 2
+   This is due to the HAL_IRQ taking too many cycles and being called to often.
+   
+
+Welcome to Comparator and ADC simultaneous usage test
+ Count       DAC           ADC1           ADC2     Comp1     Comp2  Comp Pin
+     0         0        8   10                    0
+     1       128       89  137                    0
+     2       256      175  253                    0
+     3       384      278  391                    0
+     4       512      345  517                    0
+     5       640      414  634                    0
+     6       768      537  770                    0
+     7       896      621  898                    0
+     8      1024      712 1025                    0
+     9      1152      774 1150                    0
+    10      1280      884 1269                    0
+    11      1408     1016 1406                    0
+    12      1536     1092 1524                    0
+    13      1664     1213 1651                    0
+    14      1792     1313 1779                    0
+    15      1920     1412 1915                    0
+    16      2048     1494 2042                    0
+    17      2176     1634 2171                    0
+    18      2304     1734 2287                    0
+    19      2432     1848 2417                    0
+    20      2560     1960 2541                    0
+    21      2688     2070 2673                    0
+    22      2816     2176 2799                    0
+    23      2944     2292 2927                    0
+    24      3072     2397 3055                    0
+    25      3200     2506 3195                    0
+    26      3328     2607 3311                    0
+    27      3456     2704 3451                    0
+    28      3584     2811 3571                    0
+    29      3712     2905 3695                    0
+    30      3840     3003 3823                    0
+    31      3968     3109 3949                    0
+    32         0       12    1                    0
+    33       128       96  136                    0
+    34       256      183  253                    0
+    35       384      261  390                    0
+    36       512      342  505                    0
+    37       640      443  635                    0
+    38       768      533  760                    0
+    39       896      616  900                    0
+    40      1024      686 1014                    0
+    41      1152      820 1151                    0
+    42      1280      919 1280                    0
+    43      1408     1002 1408                    0
+    44      1536     1109 1529                    0
+    45      1664     1223 1661                    0
+    46      1792     1300 1786                    0
+    47      1920     1413 1915                    0
+    48      2048     1523 2039                    0
+    49      2176     1632 2166                    0
+    50      2304     1741 2287                    0
+    51      2432     1845 2415                    0
+    52      2560     1957 2546                    0
+    53      2688     2074 2681                    0
+    54      2816     2184 2798                    0
+    55      2944     2281 2938                    0
+    56      3072     2401 3063                    0
+    57      3200     2508 3183                    0
+    58      3328     2605 3315                    0
+    59      3456     2706 3437                    0
+    60      3584     2807 3567                    0
+    61      3712     2911 3699                    0
+    62      3840     3005 3835                    0
+    63      3968     3113 3957                    0
+    64         0       20    0                    0
+    65       128       96  138                    0
+ 
+
+	
+Settingg ADC sampling all the way up to 239.5 does little to change things -
+even though the source impedance goes to 50KOhms
+
+Welcome to Comparator and ADC simultaneous usage test
+ Count       DAC           ADC1           ADC2     Comp1     Comp2  Comp Pin
+     0         0      290 2041                    0
+     1       128       26  135                    0
+     2       256      112  262                    0
+     3       384      261  392                    0
+     4       512      280  506                    0
+     5       640      419  644                    0
+     6       768      420  634                    0
+     7       896      545  901                    0
+     8      1024      619 1030                    0
+     9      1152      703 1148                    0
+    10      1280      803 1273                    0
+    11      1408      972 1411                    0
+    12      1536     1002 1541                    0
+    13      1664     1101 1667                    0
+    14      1792     1216 1792                    0
+    15      1920     1359 1914                    0
+    16      2048     1464 2040                    0
+    17      2176     1564 2169                    0
+    18      2304     1697 2307                    0
+    19      2432     1777 2432                    0
+    20      2560     1887 2553                    0
+    21      2688     2023 2681                    0
+    22      2816     2147 2819                    0
+    23      2944     2251 2947                    0
+    24      3072     2350 3065                    0
+    25      3200     2403 3204                    0
+    26      3328     2493 3321                    0
+    27      3456     2590 3461                    0
+    28      3584     2678 3591                    0
+    29      3712     2871 3717                    0
+    30      3840     2977 3841                    0
+    31      3968     3068 3963                    0
+    32         0     2673    0                    0
+    33       128       17  122                    0
+    34       256      116  130                    0
+    35       384      207  377                    0
+    36       512      344  518                    0
+    37       640      339  633                    0
+    38       768      440  773                    0
+    39       896      514  890                    0
+    40      1024      605 1029                    0
+    41      1152      712 1148                    0
+    42      1280      858 1274                    0
+    43      1408      902 1403                    0
+    44      1536      996 1530                    0
+    45      1664     1105 1658                    0
+    46      1792     1274 1785                    0
+    47      1920     1352 1924                    0
+    48      2048     1476 2053                    0
+    49      2176     1580 2179                    0
+    50      2304     1683 2292                    0
+    51      2432     1777 2423                    0
+    52      2560     1919 2563                    0
+    53      2688     1999 2681                    0
+    54      2816     2110 2809                    0
+    55      2944     2157 2935                    0
+    56      3072     2301 3077                    0
+    57      3200     2398 3193                    0
+    58      3328     2476 3327                    0
+    59      3456     2648 3449                    0
+    60      3584     2749 3579                    0
+    61      3712     2860 3710                    0
+    62      3840     2982 3847                    0
+    63      3968     3003 3963                    0
+    64         0     3103    0                    0
+    65       128       13    5                    0
+    66       256       97  123                    0
+    67       384      189  378                    0
+    68       512      276  518                    0
+	
+-----------------------------------------------------------------------------------------
+At this point we have established that the DAC takes time to charge the ADC and that the ADC needs to be raed twice
+whenever we have a high impedance source. 
+
+Now lets insert a delay between setting the DAC and reading the ADC values
+
+Ok, I admit, the order of DMA buffers is not being controlled by me at all, the results however  yield the pattern
+    a) Give the analogue time to settle
+	b) Oversample the ADC
+	c) ignore the first reading after switching channels if you can.
+	All the above are covered in the STM manual dealing with accuracy from the ADC 
+	
+	(APPNote )
+	AN2834 http://www.st.com/web/en/resource/technical/document/application_note/CD00211314.pdf
+	AN4073 http://www.st.com/web/en/resource/technical/document/application_note/DM00050879.pdf
+	AN3116 http://www.st.com/web/en/resource/technical/document/application_note/CD00258017.pdf
+	AN1636 http://www.st.com/web/en/resource/technical/document/application_note/CD00004444.pdf
+
+Welcome to Comparator and ADC simultaneous usage test
+ Count       DAC           ADC1           ADC2     Comp1     Comp2  Comp Pin
+     0         0       16    0                    0
+     1       128      101  134                    0
+     2       256      200  262                    0
+     3       384      261  379                    0
+     4       512      364  518                    0
+     5       640      420  634                    0
+     6       768      503  766                    0
+     7       896      627  900                    0
+     8      1024      690 1018                    0
+     9      1152      813 1157                    0
+    10      1280      922 1276                    0
+    11      1408     1000 1413                    0
+    12      1536     1074 1530                    0
+    13      1664     1203 1675                    0
+    14      1792     1297 1797                    0
+    15      1920     1389 1916                    0
+    16      2048     1509 2043                    0
+    17      2176     1605 2167                    0
+    18      2304     1735 2308                    0
+    19      2432     1820 2423                    0
+    20      2560     1959 2561                    0
+    21      2688     2067 2693                    0
+    22      2816     2176 2821                    0
+    23      2944     2280 2948                    0
+    24      3072     2377 3063                    0
+    25      3200     2505 3203                    0
+    26      3328     2599 3327                    0
+    27      3456     2671 3449                    0
+    28      3584     2803 3588                    0
+    29      3712     2882 3707                    0
+    30      3840     3007 3847                    0
+    31      3968     3103 3975                    0
+    32         0        8    5                    0
+    33       128       94  124                    0
+    34       256      171  260                    0
+    35       384      258  378                    0
+    36       512      363  516                    0
+    37       640      428  635                    0
+    38       768      530  772                    0
+    39       896      616  902                    0
+    40      1024      699 1018                    0
+    41      1152      788 1154                    0
+    42      1280      905 1285                    0
+    43      1408     1001 1411                    0
+    44      1536     1084 1530                    0
+    45      1664     1197 1668                    0
+    46      1792     1301 1794                    0
+    47      1920     1392 1913                    0
+    48      2048     1517 2041                    0
+    49      2176     1620 2181                    0
+    50      2304     1710 2297                    0
+    51      2432     1823 2435                    0
+    52      2560     1934 2553                    0
+    53      2688     2049 2681                    0
+    54      2816     2154 2815                    0
+    55      2944     2266 2937                    0
+    56      3072     2373 3077                    0
+    57      3200     2503 3206                    0
+    58      3328     2603 3333                    0
+    59      3456     2687 3463                    0
+    60      3584     2787 3589                    0
+    61      3712     2917 3711                    0
+    62      3840     2985 3839                    0
+    63      3968     3095 3961                    0
+    64         0       12    6                    0
+    65       128       95  124                    0
+    66       256      171  251                    0
+	
+	
+==================================================================================================
+Lets move on to the comparators
+
+AN4112 http://www.st.com/web/en/resource/technical/document/application_note/DM00055171.pdf
+AN3248 http://www.st.com/web/en/resource/technical/document/application_note/CD00280599.pdf
+AN4071 http://www.st.com/st-web-ui/static/active/en/resource/technical/document/application_note/DM00050759.pdf
+
+Here I read the comparators either in an interrupt, or via the associated output pin
+Both are working as evidenced by the IRQ managed variable as well as direct reading of PA6
+
+I still need to debug ADC2 (PA1) - it will need at least a jumper PA4->PA1.
+
+
+Comparator and ADC simultaneous usage test
+ Count       DAC           ADC1           ADC2         Comp1  Comp2   PA6/7
+     0         0      245  260              0    0          O    X    0    X
+     1       128      247  266              0    0          O    X    0    X
+     2       256      262  252              0    0          O    X    0    X
+     3       384      256  240              0    0          O    X    0    X
+     4       512      244  258              0    0          O    X    0    X
+     5       640      248  264              0    0          O    X    0    X
+     6       768      270  268              0    0          O    X    0    X
+     7       896      254  275              0    0          O    X    0    X
+     8      1024      256  242              0    0          O    X    0    X
+     9      1152      245  261              0    0          O    X    0    X
+    10      1280      253  272              0    0          O    X    0    X
+    11      1408      261  249              0    0          O    X    0    X
+    12      1536      278  278              0    0          X    X    X    X
+    13      1664      273  263              0    0          X    X    X    X
+    14      1792      243  256              0    0          X    X    X    X
+    15      1920      255  277              0    0          X    X    X    X
+    16      2048      246  265              0    0          X    X    X    X
+    17      2176      275  266              0    0          X    X    X    X
+    18      2304      240  250              0    0          X    X    X    X
+    19      2432      260  250              0    0          X    X    X    X
+    20      2560      242  247              0    0          X    X    X    X
+    21      2688      261  252              0    0          X    X    X    X
+    22      2816      267  259              0    0          X    X    X    X
+    23      2944      241  252              0    0          X    X    X    X
+    24      3072      247  266              0    0          X    X    X    X
+    25      3200      262  256              0    0          X    X    X    X
+    26      3328      267  258              0    0          X    X    X    X
+    27      3456      261  250              0    0          X    X    X    X
+    28      3584      264  253              0    0          X    X    X    X
+    29      3712      266  259              0    0          X    X    X    X
+    30      3840      255  276              0    0          X    X    X    X
+    31      3968      256  242              0    0          X    X    X    X
+    32         0      268  261              0    0          O    X    0    X
+    33       128      242  256              0    0          O    X    0    X
+    34       256      262  256              0    0          O    X    0    X
+    35       384      243  260              0    0          O    X    0    X
+    36       512      271  267              0    0          O    X    0    X
+    37       640      241  252              0    0          O    X    0    X
+    38       768      245  259              0    0          O    X    0    X
+    39       896      249  264              0    0          O    X    0    X
+    40      1024      247  266              0    0          O    X    0    X
+    41      1152      267  260              0    0          O    X    0    X
+    42      1280      256  242              0    0          O    X    0    X
+    43      1408      267  259              0    0          O    X    0    X
+    44      1536      256  240              0    0          X    X    X    X
+    45      1664      256  244              0    0          X    X    X    X
+    46      1792      270  268              0    0          X    X    X    X
+    47      1920      243  255              0    0          X    X    X    X
+    48      2048      255  275              0    0          X    X    X    X
+    49      2176      242  255              0    0          X    X    X    X
+    50      2304      266  259              0    0          X    X    X    X
+    51      2432      256  242              0    0          X    X    X    X
+    52      2560      261  252              0    0          X    X    X    X
+    53      2688      251  267              0    0          X    X    X    X
+    54      2816      274  266              0    0          X    X    X    X
+    55      2944      267  259              0    0          X    X    X    X
+    56      3072      276  272              0    0          X    X    X    X
+    57      3200      259  248              0    0          X    X    X    X
+    58      3328      256  244              0    0          X    X    X    X
+    59      3456      252  270              0    0          X    X    X    X
+    60      3584      256  242              0    0          X    X    X    X
+    61      3712      271  267              0    0          X    X    X    X
+    62      3840      257  243              0    0          X    X    X    X
+    63      3968      276  271              0    0          X    X    X    X
+    64         0      253  273              0    0          O    X    0    X
+    65       128      249  265              0    0          O    X    0    X

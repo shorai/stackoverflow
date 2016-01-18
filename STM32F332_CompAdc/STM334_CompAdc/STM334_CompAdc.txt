@@ -1,0 +1,69 @@
+Configuration	STM334_CompAdc
+STM32CubeMX 	4.9.0
+Date	01/15/2016
+MCU	STM32F334R8Tx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN6 Single-ended	ADC1_IN6	PC0
+ADC1	IN7 Single-ended	ADC1_IN7	PC1
+ADC1	IN8 Single-ended	ADC1_IN8	PC2
+COMP2	INP	COMP2_INP	PA7
+COMP2	1/2 Internal VRef	COMP2_VS_VREFINT12	VP_COMP2_VS_VREFINT12
+COMP2	ExternalOutput	COMP2_OUT	PA12
+DAC1	DAC_OUT1	DAC1_OUT1	PA4
+DAC2	DAC_OUT1	DAC2_OUT1	PA6
+SYS	Trace Asynchronous Sw	SYS_JTCK-SWCLK	PA14
+SYS	Trace Asynchronous Sw	SYS_JTMS-SWDIO	PA13
+SYS	Trace Asynchronous Sw	SYS_JTDO-TRACESWO	PB3
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PC13	GPIO_EXTI13	B1 [Blue PushButton]
+3	PC14 / OSC32_IN*	RCC_OSC32_IN	
+4	PC15 / OSC32_OUT*	RCC_OSC32_OUT	RCC_OSC32_OUT
+5	PF0 / OSC_IN*	RCC_OSC_IN	
+6	PF1 / OSC_OUT*	RCC_OSC_OUT	
+8	PC0	ADC1_IN6	
+9	PC1	ADC1_IN7	
+10	PC2	ADC1_IN8	
+16	PA2*	USART2_TX	USART_TX
+17	PA3*	USART2_RX	USART_RX
+20	PA4	DAC1_OUT1	
+21	PA5	GPIO_Output	LD2 [Green Led]
+22	PA6	DAC2_OUT1	
+23	PA7	COMP2_INP	
+45	PA12	COMP2_OUT	
+46	PA13	SYS_JTMS-SWDIO	TMS
+49	PA14	SYS_JTCK-SWCLK	TCK
+55	PB3	SYS_JTDO-TRACESWO	SWO
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : STM334_CompAdc
+Project Folder : D:\git\stackOverflow\STM32F332_CompAdc\STM334_CompAdc
+Toolchain / IDE : SW4STM32
+Firmware Package Name and Version : STM32Cube FW_F3 V1.2.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per IP : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : Balanced Size/Speed
+
+
+
+
+
+
