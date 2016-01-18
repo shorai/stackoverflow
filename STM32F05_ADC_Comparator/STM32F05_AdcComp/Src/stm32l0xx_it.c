@@ -35,16 +35,19 @@
 #include "stm32l0xx.h"
 #include "stm32l0xx_it.h"
 
+#include "main.h"
 /* USER CODE BEGIN 0 */
-
+#define USE_COMPARATORS
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+
+#ifdef USE_COMPARATORS
 extern COMP_HandleTypeDef hcomp1;
 extern COMP_HandleTypeDef hcomp2;
-
+#endif
 /******************************************************************************/
 /*            Cortex-M0+ Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -103,6 +106,7 @@ void DMA1_Channel4_5_6_7_IRQHandler(void)
 /**
 * @brief This function handles ADC1, COMP1 and COMP2 (through EXTI lines 21 and 22) interrupts.
 */
+#ifdef USE_COMPARATORS
 void ADC1_COMP_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC1_COMP_IRQn 0 */
@@ -115,5 +119,6 @@ void ADC1_COMP_IRQHandler(void)
 
   /* USER CODE END ADC1_COMP_IRQn 1 */
 }
+#endif
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

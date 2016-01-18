@@ -43,9 +43,19 @@
 #include "stm32l0xx_hal_gpio.h"
 #include "stm32l0xx_hal_usart.h"
 
+//#include "main.h"
 
+// need to delay so the DAC output can stabilise and charge the circuit capacitance
+// even with long delays and sampling times, the first read is not what we expect (close to DAC)
 #define WAIT_BEFORE_READING
+
+// for testing, disable the comparators so we can test the ADC alone
+// must also define in _it.c
 #define USE_COMPARATORS
+
+// either we read the comparator state or its output pin in the interrupt
+//#define COMP_USE_HAL_STATE
+
 
 /* USER CODE END Includes */
 
@@ -53,8 +63,12 @@
 ADC_HandleTypeDef hadc;
 DMA_HandleTypeDef hdma_adc;
 
+#ifdef USE_COMPARATORS
+void MX_COMP1_Init(void);
 COMP_HandleTypeDef hcomp1;
 COMP_HandleTypeDef hcomp2;
+#endif
+
 DAC_HandleTypeDef hdac;
 
 UART_HandleTypeDef huart2;
@@ -73,7 +87,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC_Init(void);
+#ifdef USE_COMPARATORS
 static void MX_COMP2_Init(void);
+#endif
 static void MX_DAC_Init(void);
 static void MX_USART2_UART_Init(void);
 
@@ -94,7 +110,7 @@ uint8_t dataline[120];
 
 // at 1cycle5 bufsize 16 works, 2 dies because half /full IRQ too busy
 #define ADC_BUFSIZE 4
-uint16_t adcBuf[ADC_BUFSIZE*4];
+uint32_t adcBuf[ADC_BUFSIZE*4];
 
 
 void itoa(int32_t i, char *buf, uint32_t len) {
@@ -132,6 +148,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC_Init();
+  APP_ADC_Init(&hadc);
 
 #ifdef USE_COMPARATORS
   MX_COMP1_Init();
@@ -141,7 +158,7 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  APP_ADC_Init(&hadc);
+
 
   HAL_UART_Transmit(&huart2,str,strlen((const char *) str),1000);
   HAL_UART_Transmit(&huart2,heading,strlen((const char *) heading),1000);
@@ -188,9 +205,6 @@ int main(void)
   HAL_COMP_Start_IT(&hcomp2);
 #endif
 
-
-  //HAL_ADC_Start_DMA(&hadc,adcBuf,ADC_BUFSIZE);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -200,7 +214,6 @@ int main(void)
   memset(dataline, ' ', sizeof(dataline));
   dataline[sizeof(dataline)-1] = 0;
 
-  //uint16_t delta = 1;
   while (1)
   {
   /* USER CODE END WHILE */
@@ -213,13 +226,8 @@ int main(void)
 	  int i;
 	  for(i=0; i < 10000; i++);
 #endif
-	  //uint16_t adc1 = HAL_ADC_GetValue(&hadc);
-	  //uint16_t adc2 = HAL_ADC_GetValue(&hadc);
-
-	  //sprintf((char *) dataline,"%5d  %5d  %5d\r\n",cnt,cnt,adc1);
 	  itoa (cnt,(char *) &dataline[0],5);
 	  itoa (dacValue,(char *)&dataline[10],5);
-	 // itoa (adc1,&dataline[20],5);
 
 	  itoa (adcBuf[0],(char *)&dataline[20],4);
 	  dataline[25] = '/';
@@ -232,18 +240,11 @@ int main(void)
 #ifdef USE_COMPARATORS
 	  dataline[60] =  compValues[0];
 	  dataline[65] =  compValues[1];
-
-
-
 #else
 //	  memcpy("Not Used",dataline[60],8);
 #endif
 	  dataline[70] =  (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)==GPIO_PIN_SET)?'X':'0';
 	  dataline[75] =  (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)==GPIO_PIN_SET)?'X':'0';
-
-
-	 // compValues[0] = '+';
-	 // compValues[1] = '+';
 
 	  dataline[87] = '\r';
 	  dataline[88] = '\n';
@@ -251,7 +252,7 @@ int main(void)
 
 	  HAL_UART_Transmit(&huart2,dataline,strlen((const char *) dataline),1000);
 	  cnt++;
-	  //if (cnt >=4096) cnt=0;
+
 	  dacValue = (dacValue >= (4096-DAC_STEPSIZE))?0:dacValue+DAC_STEPSIZE;
   }
   /* USER CODE END 3 */
@@ -330,11 +331,11 @@ void MX_ADC_Init(void)
 
     /**Configure for the selected ADC regular channel to be converted. 
     */
- // sConfig.Channel = ADC_CHANNEL_1;
- // HAL_ADC_ConfigChannel(&hadc, &sConfig);
+  sConfig.Channel = ADC_CHANNEL_1;
+  HAL_ADC_ConfigChannel(&hadc, &sConfig);
 
 }
-
+#ifdef USE_COMPARATORS
 /* COMP1 init function */
 void MX_COMP1_Init(void)
 {
@@ -367,7 +368,7 @@ void MX_COMP2_Init(void)
   HAL_COMP_Init(&hcomp2);
 
 }
-
+#endif
 /* DAC init function */
 void MX_DAC_Init(void)
 {
@@ -467,24 +468,24 @@ void myClocks(void) {
 
 void APP_ADC_Init(ADC_HandleTypeDef *hadc)
 {
- // GPIO_InitTypeDef                 GPIO_InitStruct;
+  GPIO_InitTypeDef                 GPIO_InitStruct;
   static DMA_HandleTypeDef         DmaHandle;
 
   /*##-1- Enable peripherals and GPIO Clocks #################################*/
   /* Enable GPIO clock ****************************************/
- // __GPIOA_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
   /* ADC1 Periph clock enable */
- // __ADC1_CLK_ENABLE();
+ __ADC1_CLK_ENABLE();
   /* Enable DMA1 clock */
- // __DMA1_CLK_ENABLE();
+  __DMA1_CLK_ENABLE();
 
 
   /*##- 2- Configure peripheral GPIO #########################################*/
   /* ADC3 Channel8 GPIO pin configuration */
-  //GPIO_InitStruct.Pin = GPIO_PIN_0| GPIO_PIN_1;
-  //GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  //GPIO_InitStruct.Pull = GPIO_NOPULL;
-  //HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = GPIO_PIN_0| GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*##- 3- Configure DMA #####################################################*/
 
@@ -511,29 +512,21 @@ void APP_ADC_Init(ADC_HandleTypeDef *hadc)
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
-
+#ifdef USE_COMPARATORS
 void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp)
 {
 	uint8_t comp;
-	uint8_t valx = 'x';
-	GPIO_PinState val;
-   if (hcomp==&hcomp1) {
-	   comp=0;
-	   val = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6);
-   } else {
-	   comp = 1;
-	   val = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7);
-   }
+	uint8_t valx=HAL_COMP_GetOutputLevel(hcomp);
 
-   switch(val) {
-   case GPIO_PIN_SET: val = 'X';
-   	   break;
-   default: val = 'O';
+	if (hcomp==&hcomp1) {
+			   comp=0;
+			} else {
+			   comp = 1;
+		   }
+	compValues[comp] = valx + '0';
 
-   }
-   compValues[comp] = val;
 }
-
+#endif
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT
