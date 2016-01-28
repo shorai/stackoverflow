@@ -25,7 +25,7 @@ These devices are relatively easy to get working.
 
 In order to get a little more interest in our device, we will put up a Free RTOS with two tasks.
 	
-	Please take a look at http://stackoverflow.com/questions/35043482 which prompted this exercise.
+	Please take a look at http://stackoverflow.com/questions/34938261 which prompted this exercise.
 	
 	A few days later I found this http://stackoverflow.com/questions/35043482
 	
