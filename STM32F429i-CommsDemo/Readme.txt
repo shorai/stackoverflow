@@ -23,8 +23,21 @@ We are going to start with the first 4 devices for the simple reason that we are
 
 These devices are relatively easy to get working.
 
-In order to get a little more interest in our device, we will read an analog pin and report its value.
+In order to get a little more interest in our device, we will put up a Free RTOS with two tasks.
 	
+	Please take a look at http://stackoverflow.com/questions/35043482 which prompted this exercise.
+	
+	A few days later I found this http://stackoverflow.com/questions/35043482
+	
+	You are not alone
+	
+	=======================================================================================
+	The rest of this readme documents the type of trouble we all had with STMCube and associated tools prior to 2016.
+	
+	After deleting and re-installing my entire STM toolchain, everything magically worked, first time out the box.
+	
+	You may get some idea of the frustrations people have reported in the past
+	=======================================================================================
 
 STM32 Cube
 ----------
