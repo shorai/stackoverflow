@@ -327,8 +327,8 @@ void MX_ADC_Init(void)
     /**Configure for the selected ADC regular channel to be converted. 
     */
   sConfig.Channel = ADC_CHANNEL_0;
-  HAL_ADC_ConfigChannel(&hadc, &sConfig);
 
+  HAL_ADC_ConfigChannel(&hadc, &sConfig);
     /**Configure for the selected ADC regular channel to be converted. 
     */
   sConfig.Channel = ADC_CHANNEL_1;
