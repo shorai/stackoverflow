@@ -17,6 +17,7 @@ C_DEPS :=
 SUBDIRS := \
 Application/SW4STM32 \
 Application/User \
+Application/User/app \
 Drivers/CMSIS \
 Drivers/STM32F4xx_HAL_Driver \
 Middlewares/FreeRTOS \

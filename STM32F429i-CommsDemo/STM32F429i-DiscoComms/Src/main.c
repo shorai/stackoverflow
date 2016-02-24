@@ -73,14 +73,14 @@ void taskADC(void);
 /* USER CODE BEGIN 0 */
 
 #define RX_BUFLEN (133*2)
-unsigned char usart1_RxBuf[RX_BUFLEN];
+unsigned char usart_RxBuf[2][RX_BUFLEN];
 //char usart1_TxBuf[132];
 
-unsigned char uart5_RxBuf[RX_BUFLEN];
+//unsigned char uart5_RxBuf[RX_BUFLEN];
 //char uart5_TxBuf[132];
 
-uint8_t* str_one = "Hello USART 1, from Task one have a happy day!\r\n";
-uint8_t* str_two = "Hello USART 1, from Task two have a happy day!\r\n";
+//uint8_t* str_one = "Hello USART 1, from Task one have a happy day!\r\n";
+//uint8_t* str_two = "Hello USART 1, from Task two have a happy day!\r\n";
 
 /* USER CODE END 0 */
 
@@ -88,7 +88,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	 uint32_t i;
+	// uint32_t i;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -115,8 +115,10 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  memset(uart5_RxBuf,0,RX_BUFLEN);
-  memset(usart1_RxBuf,0,RX_BUFLEN);
+  memset(usart_RxBuf[0],0,RX_BUFLEN);
+  memset(usart_RxBuf[1],0,RX_BUFLEN);
+
+
 
   /* USER CODE END 2 */
 
@@ -130,24 +132,28 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-   HAL_UART_Receive_DMA(&huart5,uart5_RxBuf,RX_BUFLEN);
-   HAL_UART_Receive_DMA(&huart1,usart1_RxBuf,RX_BUFLEN);
+   HAL_UART_Receive_DMA(&huart5,usart_RxBuf[0],RX_BUFLEN);
+   HAL_UART_Receive_DMA(&huart1,usart_RxBuf[1],RX_BUFLEN);
    TaskHandle_t t1Handle;
    TaskHandle_t t2Handle;
    TaskHandle_t adcHandle;
-
+   HAL_UART_Transmit_DMA(&huart1,(uint8_t*) "Hello This is UART 1\r\n"  ,(unsigned) 22);
+   HAL_UART_Transmit_DMA(&huart5,(uint8_t*) "Hello this is UART 5\r\n"  ,(unsigned) 22);
 
                                /*(code, name,stacksize,
    	   	   	   	   	   	   	   void *pvParameters,
                                UBaseType_t uxPriority,
                                TaskHandle_t *pvCreatedTask
                                */
-   BaseType_t task1 = xTaskCreate(task_one,"Task One",configMINIMAL_STACK_SIZE
+   //BaseType_t task1 =
+		   xTaskCreate(task_one,"Task One",configMINIMAL_STACK_SIZE
 		   ,(void *) NULL,(tskIDLE_PRIORITY + configMAX_PRIORITIES - 1)/2,&t1Handle);
-   BaseType_t task2 = xTaskCreate(task_two,"Task Two",configMINIMAL_STACK_SIZE
+   //BaseType_t task2 =
+		   xTaskCreate(task_two,"Task Two",configMINIMAL_STACK_SIZE
 		   ,(void *) NULL,(tskIDLE_PRIORITY + configMAX_PRIORITIES - 1)/2,&t2Handle);
 
-   BaseType_t task3 = xTaskCreate(taskADC,"Task ADC",configMINIMAL_STACK_SIZE
+   //BaseType_t task3 =
+		   xTaskCreate(taskADC,"Task ADC",configMINIMAL_STACK_SIZE
    		   ,(void *) NULL,(tskIDLE_PRIORITY + configMAX_PRIORITIES - 1)/2,&adcHandle);
 
 
@@ -224,14 +230,18 @@ void SystemClock_Config(void)
  *      - TX holds a que of up to 10 buffers, queue management
  *             When a buffer is transmitted it is truncated by putting a null @ buf[0]
  */
+char *MAIN_task1_message1 = "Hello UART 1, have a nice day! from Task_1\r\n";
+char *MAIN_task1_message5 = "Hello UART 5, have a nice day! from Task_1\r\n";
+
 void task_one(void) {
 
 	while (-1) {
 		while(HAL_UART_GetState(&huart5)==HAL_UART_STATE_BUSY_TX);
-		HAL_UART_Transmit_DMA(&huart5,(uint8_t*) "Hello UART 5, have a nice day! from Task_1\r\n"  ,(unsigned) 44);
-		//HAL_UART_Transmit_DMA(&huart1,str_one,strlen((char *) str_one));
+		HAL_UART_Transmit_DMA(&huart5,(uint8_t*)  MAIN_task1_message5 ,strlen( MAIN_task1_message5));
+
+				//HAL_UART_Transmit_DMA(&huart1,str_one,strlen((char *) str_one));
 		while(HAL_UART_GetState(&huart1)==HAL_UART_STATE_BUSY_TX);
-		HAL_UART_Transmit_DMA(&huart1,str_one,strlen((char *) str_one));  // won't work because we initialized DMA
+		HAL_UART_Transmit_DMA(&huart1,(uint8_t *) MAIN_task1_message1 ,strlen( MAIN_task1_message1));  // won't work because we initialized DMA
 
 		vTaskDelay(1000);
 	}
@@ -245,13 +255,18 @@ void task_one(void) {
  * May be equipped with a SIM800 GSM/Bluetooth device
  */
 
+char *MAIN_task2_message1 = "Hello UART 1, from Task_2 (me me me)\r\n";
+char *MAIN_task2_message5 = "Hello UART 5, from Task_2 (me me me)\r\n";
+
 void task_two(void) {
 	for(;;) {
+
 		while(HAL_UART_GetState(&huart5)==HAL_UART_STATE_BUSY_TX);
-		HAL_UART_Transmit_DMA(&huart5,(uint8_t*) "Hello UART 5, have a nice day! from Task_2\r\n"  ,(unsigned) 44);
+		HAL_UART_Transmit_DMA(&huart5,(uint8_t *) MAIN_task2_message5  ,strlen( MAIN_task2_message5));
+
 
 		while(HAL_UART_GetState(&huart1)==HAL_UART_STATE_BUSY_TX);
-		HAL_UART_Transmit_DMA(&huart1,str_two,strlen((char *) str_two));
+		HAL_UART_Transmit_DMA(&huart1,(uint8_t *) MAIN_task2_message1,strlen( MAIN_task2_message1));
 		// HAL_UART_Transmit_IT(&huart1,str_two,strlen((char *) str_two));  // won't work because we initialized DMA
 		vTaskDelay(1150);
 	}
@@ -261,7 +276,42 @@ void task_two(void) {
  * This task provides stats from the ADC
  *     Buffers are averaged, SD, max and min
  */
+
+char * MAIN_adc_message1 = "Hello UART 1, from ADC_Task\r\n";
+char * MAIN_adc_message5 = "Hello UART 5, from ADC_Task\r\n";
+
+
+#define ADC_DATASIZE 512
+
+uint16_t adcData[3][ADC_DATASIZE];
+
+/**
+ * This board only has 3 adc available
+ *   (possibly 4 if we overlay the Apple Comms port and other high Z inputs)
+ *
+ *   So each ADC/DMA combination handles exactly one input channel
+ *      Great for doing FFT and graphics since data is already organised
+ */
+
 void taskADC(void) {
+	HAL_ADC_Init(&hadc1);
+	HAL_ADC_Init(&hadc2);
+	HAL_ADC_Init(&hadc3);
+
+	HAL_ADC_Start_DMA(&hadc1,(uint32_t *) adcData[0], ADC_DATASIZE);
+	HAL_ADC_Start_DMA(&hadc2,(uint32_t *) adcData[1], ADC_DATASIZE);
+	HAL_ADC_Start_DMA(&hadc2,(uint32_t *) adcData[2], ADC_DATASIZE);
+
+	for(;;) {
+			while(HAL_UART_GetState(&huart1)==HAL_UART_STATE_BUSY_TX);
+			HAL_UART_Transmit_DMA(&huart1,(uint8_t *) MAIN_adc_message1  , strlen( MAIN_adc_message1));
+
+
+			while(HAL_UART_GetState(&huart5)==HAL_UART_STATE_BUSY_TX);
+			HAL_UART_Transmit_DMA(&huart5,(uint8_t *) MAIN_adc_message5  ,strlen( MAIN_adc_message5));
+
+			vTaskDelay(1350);
+		}
 
 
 }

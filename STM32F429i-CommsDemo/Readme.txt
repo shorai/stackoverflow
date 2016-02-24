@@ -2,7 +2,7 @@ STM32F429I Discovery Comms Canonical Example
 ============================================
 
 
-Almost alwayts, when we build systems for the 429i Discovery, we want to communicate to other devices.
+Almost always, when we build systems for the 429i Discovery, we want to communicate to other devices.
 
 Today (2016) we normally use serial comms to talk between devices
 - They are adequately fast for most purposes
